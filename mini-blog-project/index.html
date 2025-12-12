@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameDev Blog - Oleg</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+</head>
+<body>
+<div class="container">
+    <h1>Mój Mini Blog</h1>
+
+    <div style="background: #ffebee; padding: 15px; margin-bottom: 20px;">
+        <h3>Dodaj nowy artykuł</h3>
+        <input type="text" id="newTitle" placeholder="Tytuł artykułu">
+        <input type="text" id="newAuthor" placeholder="Twoje imię i nazwisko">
+        <textarea id="newContent" placeholder="Treść (możesz używać tagu <pre> dla kodu)..."></textarea>
+        <button class="btn" onclick="addArticle()">Opublikuj</button>
+    </div>
+
+    <div id="articlesList">
+        <p>Ładowanie artykułów...</p>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'api.php';
+
+    // Функція розрахунку часу читання (залишаємо, бо це круто виглядає)
+    function calculateReadingTime(text) {
+        const words = text.split(/\s+/).length;
+        return Math.ceil(words / 200);
+    }
+
+    async function loadArticles() {
+        try {
+            const res = await fetch(API_URL + '?action=get_articles');
+            const articles = await res.json();
+            const list = document.getElementById('articlesList');
+            list.innerHTML = '';
+
+            if (articles.length === 0) {
+                list.innerHTML = '<p>Brak artykułów. Dodaj pierwszy wpis!</p>';
+                return;
+            }
+
+            articles.forEach(article => {
+                const date = new Date(Number(article.id) * 1000).toLocaleDateString('pl-PL');
+                const readTime = calculateReadingTime(article.content);
+
+                const div = document.createElement('div');
+                div.className = 'article-card';
+
+                div.innerHTML = `
+                    <h3><a href="article.html?id=${article.id}">${article.title}</a></h3>
+                    <p>${article.content.substring(0, 150)}...</p>
+                    <small>
+                        Autor: <strong style="color: #d4af37">${article.author}</strong> |
+                        📅 ${date} | ⏱️ Czas czytania: ${readTime} min
+                    </small>
+                    <br>
+                    <a href="article.html?id=${article.id}" class="btn" style="font-size: 12px;">Czytaj dalej</a>
+                `;
+                list.appendChild(div);
+            });
+        } catch (error) {
+            console.error("Błąd:", error);
+            document.getElementById('articlesList').innerHTML = "<p>Błąd ładowania danych.</p>";
+        }
+    }
+
+    async function addArticle() {
+        const title = document.getElementById('newTitle').value;
+        const author = document.getElementById('newAuthor').value;
+        const content = document.getElementById('newContent').value;
+
+        if(!title || !content) return alert("Wypełnij wszystkie pola!");
+
+        await fetch(API_URL + '?action=add_article', {
+            method: 'POST',
+            body: JSON.stringify({ title, author, content })
+        });
+
+        document.getElementById('newTitle').value = '';
+        document.getElementById('newContent').value = '';
+        loadArticles();
+    }
+
+    loadArticles();
+</script>
+
+<footer style="text-align: center; margin-top: 50px; padding: 20px; border-top: 1px solid #333; color: #666; font-size: 0.9em;">
+    <p>&copy; 2025 Oleh admin Blog.</p>
+</footer>
+</body>
+</html>
