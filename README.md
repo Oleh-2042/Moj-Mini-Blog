@@ -35,7 +35,7 @@ Aby uruchomić projekt na własnym komputerze:
 1.  **Wymagania:** Zainstalowane środowisko PHP (np. XAMPP, WAMP lub wbudowany serwer PHP).
 2.  **Klonowanie:** Pobierz repozytorium:
     ```bash
-    git clone [LINK DO TWOJEGO REPOZYTORIUM]
+    git clone [https://github.com/Oleh-2042/Moj-Mini-Blog]
     ```
 3.  **Uruchomienie serwera:**
     * Skopiuj pliki do folderu `htdocs` (jeśli używasz XAMPP).
@@ -47,4 +47,4 @@ Aby uruchomić projekt na własnym komputerze:
 5.  **Start:** Otwórz przeglądarkę pod adresem `http://localhost:8000`.
 
 ---
-*Autor: Oleg [Twoje Nazwisko] | Grupa: [Twoja Grupa]*
+*Autor:  | Grupa: Marochkanych Oleh 66765 Daria Yaroshenko 66783, Grupa 3 *
