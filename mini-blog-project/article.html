@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artykuł - GameDev Blog</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="btn" style="background:transparent; border-color: #666; color: #888;">← Wróć</a>
+    <hr>
+    <div id="articleContent">Ładowanie...</div>
+    <h3 style="margin-top: 50px; border-top: 1px solid #333; padding-top: 20px;">Komentarze</h3>
+    <div id="commentsSection"></div>
+    <div style="margin-top: 30px; background: #1a1a1a; padding: 20px; border-radius: 8px; border: 1px solid #333;">
+        <h4>Dodaj komentarz</h4>
+        <input type="text" id="comAuthor" placeholder="Twoje imię (np. Gamer123)">
+        <textarea id="comText" placeholder="Twój komentarz..."></textarea>
+        <button class="btn" onclick="addComment()">Wyślij</button>
+    </div>
+</div>
+<script>
+    const API_URL = 'api.php';
+    const urlParams = new URLSearchParams(window.location.search);
+    const articleId = urlParams.get('id');
+
+    function getAvatar(name) { return `https://api.dicebear.com/7.x/pixel-art/svg?seed=${name}`; }
+
+    async function loadArticle() {
+        try {
+            const res = await fetch(API_URL + `?action=get_article&id=${articleId}`);
+            const article = await res.json();
+            if (article.error) { document.getElementById('articleContent').innerText = "Nie znaleziono artykułu."; return; }
+
+            const date = new Date(Number(article.id) * 1000).toLocaleDateString('pl-PL');
+            document.getElementById('articleContent').innerHTML = `
+                <h1>${article.title}</h1>
+                <small>Autor: <strong>${article.author}</strong> | Data: ${date}</small>
+                <div style="font-size: 18px; line-height: 1.8; color: #ccc; margin-top: 30px;">${article.content}</div>
+            `;
+
+            const commentsDiv = document.getElementById('commentsSection');
+            commentsDiv.innerHTML = '';
+            if (article.comments && article.comments.length > 0) {
+                article.comments.forEach(comment => {
+                    let repliesHtml = '';
+                    if (comment.replies) {
+                        comment.replies.forEach(reply => {
+                            repliesHtml += `
+                                <div class="reply">
+                                    <div class="comment-header">
+                                        <img src="${getAvatar(reply.author)}" class="avatar">
+                                        <strong>${reply.author}</strong> <span style="color:#666; font-size:0.8em; margin-left:10px;">odpowiedział(a):</span>
+                                    </div>
+                                    <p>${reply.text}</p>
+                                </div>`;
+                        });
+                    }
+                    const div = document.createElement('div');
+                    div.className = 'comment';
+                    div.innerHTML = `
+                        <div class="comment-header">
+                            <img src="${getAvatar(comment.author)}" class="avatar">
+                            <strong>${comment.author}</strong> <span style="color:#666; font-size:0.8em; margin-left:10px;">napisał(a):</span>
+                        </div>
+                        <p>${comment.text}</p>
+                        ${repliesHtml}
+                        <button onclick="toggleReplyForm(${comment.id})">Odpowiedz ⤵</button>
+                        <div id="replyForm-${comment.id}" class="reply-form">
+                            <input type="text" id="replyAuthor-${comment.id}" placeholder="Twoje imię">
+                            <input type="text" id="replyText-${comment.id}" placeholder="Treść odpowiedzi...">
+                            <button class="btn" style="font-size:12px; padding: 10px 20px;" onclick="addReply(${comment.id})">Dodaj odpowiedź</button>
+                        </div>
+                    `;
+                    commentsDiv.appendChild(div);
+                });
+            } else { commentsDiv.innerHTML = '<p style="color:#666; font-style:italic;">Brak komentarzy.</p>'; }
+        } catch (error) { console.error(error); }
+    }
+
+    async function addComment() {
+        const author = document.getElementById('comAuthor').value;
+        const text = document.getElementById('comText').value;
+        if(!text || !author) return alert("Wpisz imię i tekst!");
+        await fetch(API_URL + `?action=add_comment&article_id=${articleId}`, { method: 'POST', body: JSON.stringify({ author, text }) });
+        document.getElementById('comText').value = ''; loadArticle();
+    }
+
+    function toggleReplyForm(id) {
+        const form = document.getElementById(`replyForm-${id}`);
+        form.style.display = form.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function addReply(commentId) {
+        const author = document.getElementById(`replyAuthor-${commentId}`).value;
+        const text = document.getElementById(`replyText-${commentId}`).value;
+        if(!text || !author) return alert("Wpisz imię i tekst!");
+        await fetch(API_URL + `?action=add_reply&article_id=${articleId}&comment_id=${commentId}`, { method: 'POST', body: JSON.stringify({ author, text }) });
+        loadArticle();
+    }
+    loadArticle();
+</script>
+<footer style="text-align: center; margin-top: 50px; padding: 20px; border-top: 1px solid #333; color: #666; font-size: 0.9em;">
+    <p>&copy; 2025 Oleg GameDev Blog.</p>
+</footer>
+</body>
+</html>
