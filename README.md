@@ -7,8 +7,8 @@ Prosta, dynamiczna aplikacja webowa typu Blog, stworzona w ramach projektu zalic
 
 * **Działająca aplikacja (Hosting):** [http://my-blog-project.atwebpages.com/index.html](http://my-blog-project.atwebpages.com/index.html)
 * **Repozytorium GitHub:** [https://github.com/Oleh-2042/Moj-Mini-Blog](https://github.com/Oleh-2042/Moj-Mini-Blog)
-* **Prezentacja Wideo (YouTube):** [TUTAJ WKLEJ LINK DO SWOJEGO NAGRANIA]
-* **Prezentacja PDF:** [Zobacz prezentację PDF](https://drive.google.com/file/d/1nYGv46TJgjbcr0e6GkUr7OPfMI027P9-/view?usp=sharing)
+* **Prezentacja Wideo (YouTube):** [https://youtu.be/in5jBOgqgFA]
+* **Prezentacja PDF:** [Zobacz prezentację PDF](https://drive.google.com/file/d/1sMi69-lwi0JfxoQIpkM4OrWC__GD-SOx/view?usp=sharing)
 
 ## 🚀 Główne funkcjonalności
 
